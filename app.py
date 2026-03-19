@@ -417,20 +417,20 @@ elif page == "Train Model":
     st.markdown("<div class='section-title'>2. Configure Hyperparameters</div>", unsafe_allow_html=True)
     h1, h2, h3 = st.columns(3)
     with h1:
-        seq_len    = st.slider("Sequence Length",  4, 15, 8,
+        seq_len    = st.slider("Sequence Length",  4, 15, 6,
                                help="How many previous words the model sees at once")
-        embed_dim  = st.select_slider("Embedding Dim", [16, 32, 64], value=32,
+        embed_dim  = st.select_slider("Embedding Dim", [16, 32, 64], value=64,
                                       help="Word vector size — larger = richer but slower")
     with h2:
-        hidden_dim = st.select_slider("LSTM Hidden Units", [32, 64, 128], value=64,
+        hidden_dim = st.select_slider("LSTM Hidden Units", [32, 64, 128], value=128,
                                       help="LSTM memory size")
-        max_vocab  = st.slider("Max Vocabulary", 300, 2000, 1000, step=100,
+        max_vocab  = st.slider("Max Vocabulary", 300, 2000, 1500, step=100,
                                help="Max unique words the model learns")
     with h3:
-        epochs     = st.slider("Epochs",         5, 30, 15,
+        epochs     = st.slider("Epochs",         5, 30, 25,
                                help="Full passes through the training data")
         lr         = st.select_slider("Learning Rate", [0.001, 0.003, 0.005, 0.01], value=0.005)
-        max_seq    = st.slider("Max Sequences",  200, 1000, 600, step=100,
+        max_seq    = st.slider("Max Sequences",  200, 1000, 800, step=100,
                                help="Cap training sequences for speed")
 
     st.markdown(
