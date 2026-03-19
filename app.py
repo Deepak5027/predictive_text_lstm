@@ -172,6 +172,12 @@ PURPLE = "#a855f7"
 GREEN  = "#22d3a5"
 ORANGE = "#f97316"
 
+def P(**extra):
+    """Return PLOT_CFG merged with extra, safely handling xaxis/yaxis overrides."""
+    base = {k: v for k, v in PLOT_CFG.items() if k not in extra}
+    return {**base, **extra}
+
+
 # ══════════════════════════════════════════════════════════════
 # SESSION STATE
 # ══════════════════════════════════════════════════════════════
@@ -351,8 +357,9 @@ elif page == "Data Explorer":
                 textfont=dict(color="#7070a0", size=10),
             ))
             fig_bar.update_layout(
-                **PLOT_CFG, height=420,
-                yaxis=dict(autorange="reversed", gridcolor="#0d0d20"),
+        P( height=420,
+                yaxis=dict(autorange="reversed", gridcolor="#0d0d20")
+    ),
                 title=dict(text="Word Frequency (stopwords removed)",
                            font=dict(color="#dcdcf0", size=13)),
             )
@@ -369,8 +376,9 @@ elif page == "Data Explorer":
                 marker=dict(color=PURPLE, opacity=0.85, line=dict(color="#080812", width=0.5)),
             ))
             fig_len.update_layout(
-                **PLOT_CFG, height=240,
-                title=dict(text="Word Length Distribution", font=dict(color="#dcdcf0", size=13)),
+        P( height=240,
+                title=dict(text="Word Length Distribution", font=dict(color="#dcdcf0", size=13)
+    )),
                 xaxis_title="Characters", yaxis_title="Count",
             )
             st.plotly_chart(fig_len, use_container_width=True, config={"displayModeBar": False})
@@ -573,8 +581,9 @@ elif page == "Predict & Generate":
                     textfont=dict(color="#7070a0", size=10),
                 ))
                 fig_pred.update_layout(
-                    **PLOT_CFG, height=260,
-                    yaxis=dict(autorange="reversed", gridcolor="#0d0d20"),
+        P( height=260,
+                    yaxis=dict(autorange="reversed", gridcolor="#0d0d20")
+    ),
                     xaxis=dict(gridcolor="#0d0d20", tickformat=".0%"),
                     title=dict(text="Prediction Probabilities",
                                font=dict(color="#dcdcf0", size=12)),
@@ -636,9 +645,10 @@ elif page == "Predict & Generate":
                         fill="tozeroy", fillcolor="rgba(168,85,247,0.06)",
                     ))
                     fig_tok.update_layout(
-                        **PLOT_CFG, height=200,
+        P( height=200,
                         title=dict(text="Generated Token Timeline",
-                                   font=dict(color="#dcdcf0", size=12)),
+                                   font=dict(color="#dcdcf0", size=12)
+    )),
                         xaxis_title="Token position",
                         yaxis_title="Word length",
                     )
@@ -697,9 +707,10 @@ elif page == "Model Analytics":
             yaxis="y2",
         ))
         fig_curves.update_layout(
-            **PLOT_CFG, height=340,
+        P( height=340,
             title=dict(text="Training Loss & Accuracy per Epoch",
-                       font=dict(color="#dcdcf0", size=14)),
+                       font=dict(color="#dcdcf0", size=14)
+    )),
             yaxis=dict(title="Loss", titlefont=dict(color=ORANGE),
                        tickfont=dict(color=ORANGE), gridcolor="#0d0d20"),
             yaxis2=dict(title="Accuracy", titlefont=dict(color=GREEN),
@@ -719,9 +730,10 @@ elif page == "Model Analytics":
             fill="tozeroy", fillcolor="rgba(0,229,255,0.06)",
         ))
         fig_perp.update_layout(
-            **PLOT_CFG, height=200,
+        P( height=200,
             title=dict(text="Perplexity over Epochs",
-                       font=dict(color="#dcdcf0", size=13)),
+                       font=dict(color="#dcdcf0", size=13)
+    )),
             yaxis_title="Perplexity",
         )
         st.plotly_chart(fig_perp, use_container_width=True, config={"displayModeBar": False})
@@ -748,9 +760,10 @@ elif page == "Model Analytics":
                         line=dict(color="#080812", width=0.5)),
         ))
         fig_voc.update_layout(
-            **PLOT_CFG, height=240,
+        P( height=240,
             title=dict(text="Vocabulary Word Length Distribution",
-                       font=dict(color="#dcdcf0", size=13)),
+                       font=dict(color="#dcdcf0", size=13)
+    )),
             xaxis_title="Word Length (chars)", yaxis_title="Number of Words",
         )
         st.plotly_chart(fig_voc, use_container_width=True, config={"displayModeBar": False})
