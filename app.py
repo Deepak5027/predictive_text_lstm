@@ -7,6 +7,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import re
 import time
 import warnings
@@ -475,34 +476,33 @@ elif page == "Model Analytics":
     left, right = st.columns([3, 2])
 
     with left:
-        fig_curves = go.Figure()
+        # Use make_subplots for dual-axis — works in both Plotly 5 and 6
+        fig_curves = make_subplots(specs=[[{"secondary_y": True}]])
         fig_curves.add_trace(go.Scatter(
             x=epochs_run, y=history["loss"], name="Loss", mode="lines+markers",
             line=dict(color=ORANGE, width=2.5),
             marker=dict(size=7, color=ORANGE, line=dict(color="#080812", width=1.5)),
-            yaxis="y1",
-        ))
+        ), secondary_y=False)
         fig_curves.add_trace(go.Scatter(
             x=epochs_run, y=history["accuracy"], name="Accuracy", mode="lines+markers",
             line=dict(color=GREEN, width=2.5),
             marker=dict(size=7, color=GREEN, line=dict(color="#080812", width=1.5)),
-            yaxis="y2",
-        ))
+        ), secondary_y=True)
         fig_curves.update_layout(
             paper_bgcolor=BG, plot_bgcolor=BG,
             font=dict(family="Syne", color="#7070a0"),
             height=340, margin=dict(l=40, r=60, t=40, b=40),
             title=dict(text="Training Loss & Accuracy per Epoch",
                        font=dict(color="#dcdcf0", size=14)),
-            xaxis=dict(gridcolor=GRID, linecolor=GRID),
-            yaxis=dict(title="Loss", titlefont=dict(color=ORANGE),
-                       tickfont=dict(color=ORANGE), gridcolor=GRID),
-            yaxis2=dict(title="Accuracy", titlefont=dict(color=GREEN),
-                        tickfont=dict(color=GREEN), tickformat=".0%",
-                        overlaying="y", side="right", gridcolor=GRID),
-            legend=dict(bgcolor=BG, font=dict(color="#b0b0d0"),
-                        orientation="h", y=1.08),
+            legend=dict(bgcolor=BG, font=dict(color="#b0b0d0"), orientation="h", y=1.08),
         )
+        fig_curves.update_xaxes(gridcolor=GRID, linecolor=GRID)
+        fig_curves.update_yaxes(title_text="Loss", title_font=dict(color=ORANGE),
+                                tickfont=dict(color=ORANGE), gridcolor=GRID,
+                                secondary_y=False)
+        fig_curves.update_yaxes(title_text="Accuracy", title_font=dict(color=GREEN),
+                                tickfont=dict(color=GREEN), tickformat=".0%",
+                                gridcolor=GRID, secondary_y=True)
         st.plotly_chart(fig_curves, use_container_width=True, config={"displayModeBar": False})
 
     with right:
