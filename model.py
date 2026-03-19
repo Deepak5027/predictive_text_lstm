@@ -380,14 +380,39 @@ def generate_text(seed_text, model, word2idx, idx2word,
                   seq_len=8, num_words=20, temperature=0.8):
     cleaned = clean_text(seed_text).split()
     result  = cleaned.copy()
+    recent  = []  # track last 4 words to prevent repetition
 
     for _ in range(num_words):
-        window = result[-seq_len:] if len(result) >= seq_len else ["<PAD>"] * (seq_len - len(result)) + result
+        window  = result[-seq_len:] if len(result) >= seq_len else ["<PAD>"] * (seq_len - len(result)) + result
         indices = np.array([word2idx.get(w, 1) for w in window], dtype=np.int32)
-        top_idx, _ = model.predict(indices, temperature=temperature, top_k=3)
-        next_word   = idx2word.get(int(top_idx[0]), "<UNK>")
-        if next_word in ("<PAD>", "<UNK>"):
-            next_word = idx2word.get(int(top_idx[1]) if len(top_idx) > 1 else 2, "the")
+
+        # Get top-15 candidates and pick best non-repeated one
+        top_idx, top_probs = model.predict(indices, temperature=temperature, top_k=15)
+
+        next_word = None
+        for idx, prob in zip(top_idx, top_probs):
+            candidate = idx2word.get(int(idx), "<UNK>")
+            if candidate in ("<PAD>", "<UNK>"):
+                continue
+            # Avoid repeating the same word 3+ times in a row
+            if recent.count(candidate) >= 2:
+                continue
+            next_word = candidate
+            break
+
+        # Fallback if all candidates were filtered
+        if next_word is None:
+            for idx in top_idx:
+                candidate = idx2word.get(int(idx), "<UNK>")
+                if candidate not in ("<PAD>", "<UNK>"):
+                    next_word = candidate
+                    break
+        if next_word is None:
+            next_word = "the"
+
         result.append(next_word)
+        recent.append(next_word)
+        if len(recent) > 4:
+            recent.pop(0)
 
     return " ".join(result)
